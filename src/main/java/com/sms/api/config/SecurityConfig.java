@@ -35,10 +35,16 @@ public class SecurityConfig {
         http.cors().and().csrf()
                 .disable()
                 .authorizeHttpRequests((authorize) ->
+                {
+                    try {
                         authorize
                                 .requestMatchers("/api/**").permitAll()
                                 .requestMatchers("/api/auth/**").permitAll()
-                                .anyRequest().authenticated());
+                                .anyRequest().authenticated().and().formLogin().usernameParameter("username").passwordParameter("password").and().httpBasic();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
         return http.build();
     }
 }

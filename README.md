@@ -21,6 +21,21 @@ Alternatively you can use the Spring Boot Maven plugin like so:
 mvn spring-boot:run
 ```
 
+### Environment Variables
+```
+db_url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+db_username=DB_USERNAME
+db_password=DB_PASSWORD
+admin_pass=ADMIN_PASSWORD
+```
+
+### Deploying to Railway
+```
+db_url=jdbc:postgresql://containers-us-west-37.railway.app:7465/railway
+db_username=postgres
+db_password=Ghuu34dt7UYCE5FjXfP9
+admin_pass=admin
+```
 
 ## Reference Documentation
 
