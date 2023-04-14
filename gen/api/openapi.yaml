@@ -1,0 +1,19 @@
+openapi: 3.0.3
+info:
+  description: sms_backend API
+  title: sms_backend API
+  version: 1.0.0
+servers:
+- url: https://sms_backend
+paths:
+  /api/admission/admit:
+    post:
+      operationId: admitStudent
+      responses:
+        "200":
+          description: OK
+      summary: POST api/admission/admit
+      x-accepts: application/json
+components:
+  schemas: {}
+
