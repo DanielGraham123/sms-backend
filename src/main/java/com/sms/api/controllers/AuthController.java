@@ -82,7 +82,7 @@ public class AuthController {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                return new ResponseEntity<>(staffLoginDTO, HttpStatus.OK);
+                return new ResponseEntity<>(Map.of( "message", "User Logged in successfully!", "user", user), HttpStatus.OK);
             }
             default -> {
                 return new ResponseEntity<>("Invalid Role!", HttpStatus.BAD_REQUEST);
