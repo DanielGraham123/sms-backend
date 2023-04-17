@@ -1,9 +1,7 @@
 package com.sms.api.controllers;
 
 import com.sms.api.exceptions.UserNotFoundException;
-import com.sms.api.model.dtos.StaffLoginDTO;
-import com.sms.api.model.dtos.UserLoginDTO;
-import com.sms.api.model.dtos.UserRegisterDTO;
+import com.sms.api.model.dtos.*;
 import com.sms.api.model.entities.Parent;
 import com.sms.api.model.entities.Student;
 import com.sms.api.model.entities.UserEntity;
@@ -105,9 +103,6 @@ public class AuthController {
             return new ResponseEntity<>("Email already taken!", HttpStatus.BAD_REQUEST);
         }
 
-//        create user object
-//        UserEntity user = new UserEntity();
-
         if (registerDTO.getRole().contains(Role.PARENT)) {
             UserEntity parent = new Parent();
 
@@ -133,5 +128,28 @@ public class AuthController {
         }
 
         return new ResponseEntity<>("Invalid User!", HttpStatus.BAD_REQUEST);
+    }
+
+    @PutMapping("/staff/update/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable(value = "id") String id, @RequestBody AdminDTO adminDTO) throws UserNotFoundException {
+        log.info("Updating user: " + adminDTO);
+
+        UserEntity user = userRepo.findById(Long.parseLong(id)).orElseThrow(() -> new UserNotFoundException("User not found!"));
+
+        user.setEmail(adminDTO.getEmail());
+        user.setUserName(adminDTO.getUsername());
+
+        return new ResponseEntity<>(Map.of("message", "User updated successfully!", "user", userRepo.save(user)), HttpStatus.OK);
+    }
+
+    @PutMapping("/update-password/{id}")
+    public ResponseEntity<?> updateUserPassword(@PathVariable(value = "id") String id, @RequestBody PasswordDTO passwordDTO) throws UserNotFoundException {
+        log.info("Updating user Password: " + passwordDTO);
+
+        UserEntity user = userRepo.findById(Long.parseLong(id)).orElseThrow(() -> new UserNotFoundException("User not found!"));
+
+        user.setPassword(passwordEncoder.encode(passwordDTO.getNewPassword()));
+
+        return new ResponseEntity<>(Map.of("message", "User updated successfully!", "user", userRepo.save(user)), HttpStatus.OK);
     }
 }
