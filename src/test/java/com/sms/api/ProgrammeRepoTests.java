@@ -1,6 +1,5 @@
 package com.sms.api;
 
-import com.sms.api.model.dtos.ProgrammeDTO;
 import com.sms.api.model.entities.Programme;
 import com.sms.api.model.entities.enums.Level;
 import com.sms.api.repositories.ProgrammeRepository;
