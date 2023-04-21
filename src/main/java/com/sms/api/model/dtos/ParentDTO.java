@@ -16,6 +16,6 @@ public class ParentDTO {
     private String email;
     private String address;
     private String phoneNumber;
+    private Gender gender;
     private ParentType parentType;
-
 }

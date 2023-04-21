@@ -1,9 +1,9 @@
 package com.sms.api.config;
 
+import com.sms.api.model.entities.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -40,6 +40,7 @@ public class SecurityConfig {
                         authorize
                                 .requestMatchers("/api/**").permitAll()
                                 .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/api/admission/**").hasAuthority(Role.ADMIN.name())
                                 .anyRequest().authenticated().and().formLogin().usernameParameter("username").passwordParameter("password").and().httpBasic();
                     } catch (Exception e) {
                         throw new RuntimeException(e);

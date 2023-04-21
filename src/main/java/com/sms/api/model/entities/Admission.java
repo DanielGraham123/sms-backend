@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.GeneratorType;
 
+import java.time.LocalDate;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,34 +22,26 @@ import org.hibernate.annotations.GeneratorType;
 @Table(name = "admissions")
 @EqualsAndHashCode(callSuper = true)
 public class Admission extends BaseEntityWithId {
-    @Enumerated(EnumType.STRING)
-    private PersonType personType;
-    @Column(name = "st_first_name", nullable = false)
-    private String studentFName;
-    @Column(name = "st_last_name", nullable = false)
-    private String studentLName;
-    @Column(name = "st_date_of_birth", nullable = false)
-    private String studentDOB;
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
     @Column(name = "adm_form_number", nullable = false, unique = true)
     @GeneratorType(type = AdmissionFormNumberGenerator.class, when = GenerationTime.INSERT)
     private String formNumber;
     @Column(name = "adm_year", nullable = false)
-    private String admissionYear;
+    private LocalDate admissionYear;
     @Column(name = "adm_status")
     private boolean admissionStatus = false;
     @Enumerated(EnumType.STRING)
     private Level level;
-    @OneToOne(fetch= FetchType.EAGER)
-    @JsonBackReference
-    @JoinColumn(name = "programme_id", referencedColumnName="id", nullable = false)
-    private Programme programme;
-    @OneToOne(fetch= FetchType.EAGER)
-    @JsonBackReference
-    @JoinColumn(name = "grade_id",referencedColumnName="id", nullable = false)
-    private Grade grade;
+//    @OneToOne(fetch= FetchType.EAGER)
+//    @JsonBackReference
+//    @JoinColumn(name = "programme_id", referencedColumnName="id", nullable = false)
+//    private Programme programme;
+//    @OneToOne(fetch= FetchType.EAGER)
+//    @JsonBackReference
+//    @JoinColumn(name = "grade_id",referencedColumnName="id", nullable = false)
+//    private Grade grade;
     @ManyToOne
     private Parent parent;
+    @ManyToOne
+    private Student student;
 }
 

@@ -22,7 +22,7 @@ public class Course extends BaseEntityWithId {
     private String description;
     @ManyToOne
     private Programme programme;
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "grade_id")
     private Set<Grade> grades;
 }
