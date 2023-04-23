@@ -1,5 +1,6 @@
 package com.sms.api.model.dtos;
 
+import com.sms.api.model.entities.enums.Gender;
 import lombok.*;
 
 @Data
@@ -12,6 +13,6 @@ public class TeacherDTO {
     private String email;
     private String address;
     private String phoneNumber;
-    private String password;
+    private Gender gender;
     private int course_id;
 }
