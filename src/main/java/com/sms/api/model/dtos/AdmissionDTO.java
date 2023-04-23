@@ -19,8 +19,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdmissionDTO {
-    private LocalDate admissionYear;
-    private Level level;
+    private String admissionYear;
     private ParentDTO parent;
     private StudentDTO student;
     private boolean admissionStatus = false;

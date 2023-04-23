@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class PersonEntityDTO {
-    private Long id;
+public class PersonEntityDTO {
     private String firstName;
     private String lastName;
     private String dateOfBirth;

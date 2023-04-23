@@ -19,7 +19,10 @@ import org.springframework.stereotype.Service;
 
 import java.awt.*;
 import java.nio.file.attribute.UserPrincipalNotFoundException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -35,15 +38,13 @@ public class AdmissionService {
     private final AdmissionsRepository admissionsRepo;
     private final PasswordEncoder passwordEncoder;
 
-    public Object admitStudent(AdmissionDTO admissionDTO) throws Exception {
-        Admission admission = new Admission();
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+    public Object admitStudent(AdmissionDTO admissionDTO) throws Exception {
         Parent parent = new Parent();
 
         Set<Role> pRoles = new HashSet<>();
         pRoles.add(Role.PARENT);
-        Set<Role> sRoles = new HashSet<>();
-        sRoles.add(Role.STUDENT);
 
         parent.setEmail(admissionDTO.getParent().getEmail());
         parent.setFirstName(admissionDTO.getParent().getFirstName());
@@ -57,31 +58,82 @@ public class AdmissionService {
         parent.setUserName(parent.getFirstName() + "" + parent.getLastName());
         parent.setPassword(passwordEncoder.encode(parent.getFirstName() + "" + parent.getLastName()));
 
-        var parentSaved = parentRepo.save(parent);
+        log.info("Parent: {}", parent);
 
-        Student student = new Student();
+        var savedStudent = createStudent(admissionDTO, parent);
+        var savedAdmission = saveAdmission(admissionDTO, (Student) savedStudent);
 
-        student.setRole(sRoles);
-        student.setFirstName(admissionDTO.getStudent().getFirstName());
-        student.setLastName(admissionDTO.getStudent().getLastName());
-        student.setGender(admissionDTO.getStudent().getGender());
-        student.setDateOfBirth(admissionDTO.getStudent().getDateOfBirth());
-        student.setEnrollDate(admissionDTO.getAdmissionYear());
-        student.setGrade(gradeRepo.findById(admissionDTO.getStudent().getGrade_id()).orElse(null));
-        student.setProgramme(programmeRepo.findById(admissionDTO.getStudent().getProgramme_id()).orElse(null));
-        student.setLevel(admissionDTO.getLevel());
-        student.setParent(parentSaved);
+        return Map.of("message", "Admission Saved!", "admission", savedAdmission);
+    }
 
-        student.setUserName(student.getFirstName() + "" + student.getLastName());
-        student.setPassword(passwordEncoder.encode(student.getFirstName() + "" + student.getLastName()));
+    private Object createStudent(AdmissionDTO admissionDTO, Parent parent) {
+        try {
+            System.out.println("AdmissionDTO: " + admissionDTO);
+            Student student = new Student();
+            Set<Role> sRoles = new HashSet<>();
+            sRoles.add(Role.STUDENT);
+            student.setFirstName(admissionDTO.getStudent().getFirstName());
+            student.setLastName(admissionDTO.getStudent().getLastName());
+            student.setRole(sRoles);
+            student.setGender(admissionDTO.getStudent().getGender());
+            student.setDateOfBirth(admissionDTO.getStudent().getDateOfBirth());
 
-        var studentSaved = studentRepo.save(student);
+            System.out.println("Stopping here: "+student);
 
-        admission.setAdmissionYear(admissionDTO.getAdmissionYear());
-        admission.setStudent(studentSaved);
-        admission.setParent(parentSaved);
+            student.setEnrollDate(LocalDate.parse(admissionDTO.getStudent().getEnrollDate(), formatter));
+            System.out.println("date: "+ admissionDTO.getStudent().getEnrollDate());
 
-        return admissionsRepo.save(admission);
+            student.setGrade(gradeRepo.findById(admissionDTO.getStudent().getGrade_id()).orElse(null));
+            student.setProgramme(programmeRepo.findById(admissionDTO.getStudent().getProgramme_id()).orElse(null));
+            student.setLevel(admissionDTO.getStudent().getLevel());
+
+            student.setParent(parent);
+
+            student.setUserName(student.getFirstName() + "" + student.getLastName());
+            student.setPassword(passwordEncoder.encode(student.getFirstName() + "" + student.getLastName()));
+            student.setEmail(admissionDTO.getStudent().getEmail());
+
+            log.info("Student: {}", student);
+
+//        parent.setStudents(Set.of(student));
+
+            System.out.println("students: "+parent.getStudents());
+
+//            Set<Student> students = parent.getStudents();
+//            students.add(student);
+//            parent.setStudents(students);
+
+            var parentSaved = parentRepo.save(parent);
+
+            log.info("Parent Saved: {}", parentSaved);
+
+            var studentSaved = studentRepo.save(student);
+
+            log.info("Student Saved: {}", studentSaved);
+
+            return studentSaved;
+        } catch (Exception error) {
+            System.err.println("Error: " + error.getMessage());
+            return Map.of("message", "Error: " + error.getMessage());
+        }
+    }
+
+    private Object saveAdmission(AdmissionDTO admissionDTO, Student student) {
+        try {
+            Admission admission = new Admission();
+
+            admission.setAdmissionYear(LocalDate.parse(admissionDTO.getAdmissionYear(), formatter));
+            admission.setStudent(student);
+            admission.setParent(student.getParent());
+            admission.setLevel(student.getLevel());
+
+            log.info("Admission: {}", admission);
+
+            return admissionsRepo.save(admission);
+        } catch (Exception error) {
+            System.err.println("Error: " + error.getMessage());
+            return Map.of("message", "Error: " + error.getMessage());
+        }
     }
 
     public Object getAdmissions() {
