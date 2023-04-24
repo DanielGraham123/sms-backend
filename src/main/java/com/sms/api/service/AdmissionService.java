@@ -1,6 +1,7 @@
 package com.sms.api.service;
 
 import com.sms.api.model.dtos.AdmissionDTO;
+import com.sms.api.model.dtos.ApprovalDTO;
 import com.sms.api.model.dtos.ParentDTO;
 import com.sms.api.model.dtos.UserRegisterDTO;
 import com.sms.api.model.entities.Admission;
@@ -145,5 +146,28 @@ public class AdmissionService {
     }
 
 
+    public Object approveAdmission(ApprovalDTO approvalDTO) {
+        try {
+            var admission = admissionsRepo.findById((long) approvalDTO.getAdmission_id()).orElse(null);
 
+            if (admission == null) {
+                return Map.of("message", "Admission not found!");
+            }
+
+            admission.setAdmissionStatus(approvalDTO.getAdmissionStatus());
+
+            var admissionSaved = admissionsRepo.save(admission);
+
+            log.info("Admission Saved: {}", admissionSaved);
+
+            return admissionSaved;
+        } catch (Exception error) {
+            System.err.println("Error: " + error.getMessage());
+            return Map.of("message", "Error: " + error.getMessage());
+        }
+    }
+
+    public Object getAdmittedStudents() {
+        return admissionsRepo.findAllByAdmissionStatus(true);
+    }
 }

@@ -1,8 +1,11 @@
 package com.sms.api.controllers;
 
 import com.sms.api.model.dtos.AdmissionDTO;
+import com.sms.api.model.dtos.ApprovalDTO;
+import com.sms.api.model.entities.Admission;
 import com.sms.api.model.entities.UserEntity;
 import com.sms.api.model.entities.enums.Role;
+import com.sms.api.repositories.AdmissionsRepository;
 import com.sms.api.repositories.UserRepository;
 import com.sms.api.service.AdmissionService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdmissionController {
     private final AdmissionService admissionService;
     private final UserRepository userRepo;
+    private final AdmissionsRepository admissionRepo;
 
     @PostMapping("/admit")
     public ResponseEntity<?> admitStudent(@RequestBody AdmissionDTO admissionDTO) throws Exception {
@@ -32,6 +36,22 @@ public class AdmissionController {
 
     }
 
+    @PutMapping("/approve")
+    public ResponseEntity<?> approveAdmission(@RequestBody ApprovalDTO approvalDTO) throws Exception {
+        Admission admissionForm = admissionRepo.findById((long)approvalDTO.getAdmission_id()).orElse(null);
+
+        if (admissionForm == null) {
+            return new ResponseEntity<>("Admission form not found", HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(admissionService.approveAdmission(approvalDTO), HttpStatus.OK);
+    }
+
+    @GetMapping("/admitted")
+    public ResponseEntity<?> getAdmittedStudents() {
+        return new ResponseEntity<>(admissionService.getAdmittedStudents(), HttpStatus.OK);
+    }
+
     @GetMapping("/all")
     public ResponseEntity<?> getAdmissions() {
         return new ResponseEntity<>(admissionService.getAdmissions(), HttpStatus.OK);
@@ -41,4 +61,5 @@ public class AdmissionController {
     public ResponseEntity<?> getAdmission(@PathVariable Long id) {
         return new ResponseEntity<>(admissionService.getAdmissionById(id), HttpStatus.OK);
     }
+
 }
