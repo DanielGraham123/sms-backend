@@ -90,4 +90,11 @@ public class CourseController {
 
         return ResponseEntity.ok("Course deleted successfully");
     }
+
+    @GetMapping("/programme/{id}")
+    public ResponseEntity<?> getCoursesByProgrammeId(@PathVariable(value = "id") String id) throws ProgrammeNotFoundException {
+        var programme = programmeRepository.findById(Long.parseLong(id)).orElseThrow(() -> new ProgrammeNotFoundException("Programme not found with id: " + id));
+
+        return ResponseEntity.ok(courseRepository.findAllByProgrammeId(programme.getId()));
+    }
 }

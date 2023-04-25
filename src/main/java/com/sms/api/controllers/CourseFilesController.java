@@ -62,4 +62,28 @@ public class CourseFilesController {
         return ResponseEntity.ok(courseFilesRepo.save(courseFiles));
 
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteCourseFile(@RequestParam String name) throws Exception {
+        var courseFiles_ = courseFilesRepo.findByName(name);
+
+        if (courseFiles_.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File '" + name + "' not found");
+        }
+
+        courseFilesRepo.delete(courseFiles_.get());
+
+        return ResponseEntity.ok("File '" + name + "' deleted");
+    }
+
+    @GetMapping("/course/{id}")
+    public ResponseEntity<?> getCourseFilesByCourseId(@PathVariable(value = "id") String id) throws Exception {
+        var courseFiles_ = courseFilesRepo.findAllByCourseId(Long.parseLong(id));
+
+        if (courseFiles_.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No files found for course with id: " + id);
+        }
+
+        return ResponseEntity.ok(courseFiles_);
+    }
 }

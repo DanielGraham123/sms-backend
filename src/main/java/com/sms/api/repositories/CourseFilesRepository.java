@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface CourseFilesRepository extends JpaRepository<CourseFiles, Long> {
     Optional<CourseFiles> findByName(String name);
-//    List<CourseFiles> findAllByCourseId(Long id);
+    List<CourseFiles> findAllByCourseId(Long id);
 //
 //    List<CourseFiles> findAllByUserId(Long id);
 }
