@@ -31,9 +31,9 @@ admin_pass=ADMIN_PASSWORD
 
 ### Deploying to Railway
 ```
-db_url=jdbc:postgresql://containers-us-west-37.railway.app:7465/railway
+db_url=jdbc:postgresql://containers-us-west-1.railway.app:6583/railway
 db_username=postgres
-db_password=Ghuu34dt7UYCE5FjXfP9
+db_password=XOxeZ7YtnS5afVYSRmSb
 admin_pass=admin
 ```
 

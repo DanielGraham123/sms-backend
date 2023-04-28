@@ -80,7 +80,14 @@ public class AuthController {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                return new ResponseEntity<>(Map.of( "message", "User Logged in successfully!", "user", user), HttpStatus.OK);
+                var response = authService.loginToChatEngine(staffLoginDTO.getUsernameOrEmail(), staffLoginDTO.getPassword());
+
+                if (response == null) {
+                    log.error("Error connecting staff to chatengine.io");
+                    return new ResponseEntity<>("Error connecting STAFF to chatengine.io", HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+
+                return new ResponseEntity<>(Map.of( "message", "User Logged in successfully!", "user", user, "chats", response), HttpStatus.OK);
             }
             default -> {
                 return new ResponseEntity<>("Invalid Role!", HttpStatus.BAD_REQUEST);

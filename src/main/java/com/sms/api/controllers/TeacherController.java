@@ -1,13 +1,16 @@
 package com.sms.api.controllers;
 
 import com.sms.api.model.dtos.TeacherDTO;
+import com.sms.api.model.dtos.UserRegisterDTO;
 import com.sms.api.model.entities.Course;
 import com.sms.api.model.entities.Teacher;
 import com.sms.api.model.entities.enums.Role;
 import com.sms.api.repositories.CourseRepository;
 import com.sms.api.repositories.TeacherRepository;
+import com.sms.api.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -25,6 +29,7 @@ import java.util.Set;
 public class TeacherController {
     private final TeacherRepository teacherRepository;
     private final CourseRepository courseRepository;
+    private final AuthService authService;
 
     @GetMapping("")
     public ResponseEntity<?> getTeachers() {
@@ -76,7 +81,14 @@ public class TeacherController {
 
             teacher.setCourse(course);
 
-            return ResponseEntity.ok(teacherRepository.save(teacher));
+            var response = authService.registerToChatEngine(teacher.getUsername(), teacher.getPassword(), teacher.getEmail(), teacher.getFirstName(), teacher.getLastName());
+
+            if (response == null) {
+                log.error("Error while registering Teacher to chat engine");
+                return new ResponseEntity<>("Error while registering to chat engine", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            return ResponseEntity.ok(Map.of("teacher", teacherRepository.save(teacher), "chats", response));
         } catch (Exception e) {
             System.err.println(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
